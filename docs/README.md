@@ -1,5 +1,7 @@
 # Cube Race bot on Discord
 
+Version: 0.1
+
 ## Prefix
 
 The prefix for commands is `/` (aka slash command).
