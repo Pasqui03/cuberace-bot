@@ -49,7 +49,6 @@ For each attempt, requires one of these following values:
 ### `/competembld $time $solvedCubes $totalCubes`
 
 Insert the attempt for MBLD event, there's only 1 attempt for each competitor.
-The results of MBLD must follow from WCA Regulation ([Article H: Multi-Blind Solving](https://www.worldcubeassociation.org/regulations/#article-H-multiple-blindfolded)).
 
 ##### $time
 
