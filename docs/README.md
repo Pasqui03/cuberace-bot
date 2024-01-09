@@ -12,9 +12,9 @@ The prefix for commands is `/` (aka slash command).
 
 ## List of commands
 
-### `/compete $event $attempt1 $attempt2 $attempt3 $attempt4 $attempt5`
+### `/<event> $attempt1 $attempt2 $attempt3 [$attempt4 $attempt5]`
 
-Insert the attempts for `$event`. It requires 3 or 5 attempts, depends of `$event` value.
+Insert the attempts for `$event`. It requires 3 or 5 attempts, depends of `<event>` value.
 
 ##### $event
 
@@ -46,7 +46,7 @@ For each attempt, requires one of these following values:
 - DNF
 - DNS
 
-### `/competembld $time $solvedCubes $totalCubes`
+### `/mbld $time $solvedCubes $totalCubes`
 
 Insert the attempt for MBLD event, there's only 1 attempt for each competitor.
 
