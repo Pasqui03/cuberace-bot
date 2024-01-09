@@ -3,11 +3,11 @@
 ### Register the commands:
 
 ```
-    node .\deploy-commands.js
+node .\deploy-commands.js
 ```
 
 ### Run the bot
 
 ```
-nodemon
+nodemon index.js
 ```
