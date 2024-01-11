@@ -9,6 +9,14 @@ module.exports = {
         .setDescription('Show the ranking of cubing race'),
     async execute(interaction) {
 
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+            await interaction.reply({
+                content:
+                    "You are not authorized to execute this command.",
+                ephemeral: true
+            });
+            return;
+        }
         const events = ["333", "222", "444", "555", "666", "777", "clock", "mega", "pyra", "skewb", "sq1", "3bld", "4bld", "5bld"];
         let r = 0;
         let table = "# Ranking\n";
