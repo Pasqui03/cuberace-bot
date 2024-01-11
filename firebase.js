@@ -6,8 +6,6 @@ const firebaseConfig = {
   messagingSenderId: process.env.MESSAGING_SENDER_ID,
   appId: process.env.APP_ID
 };
-
-
 // Import the functions you need from the SDKs you need
 const fbApp = require("firebase/app");
 // TODO: Add SDKs for Firebase products that you want to use
@@ -15,12 +13,18 @@ const fbApp = require("firebase/app");
 const app = fbApp.initializeApp(firebaseConfig);
 
 //firebase
-const gF = require('firebase-admin/firestore');
-const db = gF.getFirestore(app);
+const { setDoc, doc, getFirestore } = require('firebase/firestore');
+const db = getFirestore(app);
 
+module.exports = {
+  db: db
+}
 //prova x vedere se funzia
-const data = {
+/*const data = {
   name: 'Los Angeles',
   state: 'CA',
   country: 'USA'
-};
+};*/
+
+//const res = async () => await await setDoc(doc(db, "cities", "new-city-id"), data);
+//res();

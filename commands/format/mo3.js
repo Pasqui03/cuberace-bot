@@ -1,20 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 
-function convertStringTimeToNumber(str) {
-    arr = str.split(":");
-    arr.reverse();
-    seconds = Number(arr[0]);
-    for (let i = 1; i < arr.length; i++) {
-        seconds += Number(arr[i]) * (60 * i);
-    }
-    return seconds;
-}
-
-function convertSecondsToString(time) {
-    const date = new Date(null);
-    date.setMilliseconds(time * 1000);
-    return date.toISOString().substr(11, 11).replace(/^[0:]*(?!\.)/g, '');
-}
+const { convertStringTimeToNumber, convertNumberToStringTime } = require("../../utils/helper.js");
 
 module.exports = (eventname) => {
     return {
@@ -37,6 +23,18 @@ module.exports = (eventname) => {
                     .setRequired(true)
             ),
         async execute(interaction) {
+            const docRef = doc(db, "servers", interaction.guild.id, eventname, interaction.user.id);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                await interaction.reply({
+                    content:
+                        "You've already participated in this event.",
+                    ephemeral: true
+                });
+                return;
+            }
+
             let attemptsString = [];
             for (let i = 1; i <= 3; i++) {
                 attemptsString.push((interaction.options.getString(`attempt${i}`)).trim());
@@ -79,19 +77,34 @@ module.exports = (eventname) => {
                 return;
             }
 
-            attempts = attempts.filter(attempt => attempt !== -1);
-            if (attempts.length <= 2) { //at least 1 DNF
-                await interaction.reply(`${interaction.user} did DNF mo3 with ${eventname}`);
+            
+            let avg, best, avgStr, bestStr;
+            attempts = attempts.filter(x => (x !== "DNF" || x !== "DNS"));
+
+            if (attempts.length === 0) { //all DNF                
+                avg = "DNF", best = "DNF", avgStr = "DNF", bestStr = "DNF";
             } else {
-                let min = Math.min(...attempts);
-                min = convertSecondsToString(min);
-                let mean = 0;
-                attempts.forEach(attempt => { mean += attempt });
-                mean /= 3;
-                mean = Math.round(mean * 100) / 100 //rounds to 2 decimal digits
-                time = convertSecondsToString(mean);
-                await interaction.reply(`${interaction.user} did **${time}** mo3 *(best ${min})* with ${eventname}`);
+                best = Math.min(...attempts);
+                bestStr = convertNumberToStringTime(best);
+                avg = 0;
+                if (attempts.length === 3) {
+                    attempts.forEach(attempt => { avg += attempt });
+                    avg /= 3;
+                    avg = Math.round(avg * 100) / 100 //rounds to 2 decimal digits
+                    avgStr = convertNumberToStringTime(avg);
+
+                } else {
+                    avg = "DNF", avgStr = "DNF";
+                }
             }
+            const data = {
+                avg: avg,
+                best: best
+            };
+
+            const addData = async () => await setDoc(docRef, data);
+            addData();
+            await interaction.reply(`${interaction.user} did **${avgStr}** mo3 *(best ${bestStr})* with ${eventname}`);
         }
     }
 };

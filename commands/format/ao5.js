@@ -1,30 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-
-function convertStringTimeToNumber(str) {
-    arr = str.split(":");
-    arr.reverse();
-    seconds = Number(arr[0]);
-    for (let i = 1; i < arr.length; i++) {
-        seconds += Number(arr[i]) * (60 * i);
-    }
-    return seconds;
-}
-
-function isDNF(avg) {
-    let count = 0;
-    avg.forEach(attempt => {
-        if (attempt === -1) {
-            count++;
-        }
-    })
-    return count >= 2;
-}
-
-function convertSecondsToString(time){
-    const date = new Date(null);
-    date.setMilliseconds(time * 1000);
-    return date.toISOString().substr(11, 11).replace(/^[0:]*(?!\.)/g, '');
-}
+const { db } = require("./../../firebase.js");
+const { doc, getDoc, setDoc } = require('firebase/firestore');
+const { convertStringTimeToNumber, isAvgDNF, convertNumberToStringTime } = require("../../utils/helper.js");
 
 module.exports = (eventname) => {
     return {
@@ -57,6 +34,19 @@ module.exports = (eventname) => {
                     .setRequired(true)
             ),
         async execute(interaction) {
+
+            const docRef = doc(db, "servers", interaction.guild.id, eventname, interaction.user.id);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                await interaction.reply({
+                    content:
+                        "You've already participated in this event.",
+                    ephemeral: true
+                });
+                return;
+            }
+
             let attemptsString = [];
             for (let i = 1; i <= 5; i++) {
                 attemptsString.push((interaction.options.getString(`attempt${i}`)).trim());
@@ -68,25 +58,15 @@ module.exports = (eventname) => {
 
             const rgx = /^((\d+\:)?[0-5]?\d\:)?[0-5]?\d\.\d\d$/
 
-            let results = [];
+            let attempts = [];
             let err = false;
 
             attemptsString.every(async attempt => {
                 let seconds = 0;
                 if (rgx.test(attempt)) {
-                    number = convertStringTimeToNumber(attempt);
-                    if (number > 0){
-                        seconds = number;
-                    }else{
-                        err = true
-                        await interaction.reply({
-                            content:
-                                "All your attempts must be greater than 0.",
-                            ephemeral: true
-                        });
-                    }
+                    seconds = convertStringTimeToNumber(attempt);
                 } else if (attempt.toUpperCase() == "DNF" || attempt.toUpperCase() == "DNS") {
-                    seconds = -1;
+                    seconds = attempt.toUpperCase();
                 } else {
                     err = true;
                     await interaction.reply({
@@ -96,25 +76,42 @@ module.exports = (eventname) => {
                     });
                     return false; //similiar break
                 }
-                results.push(seconds);
-            })
+                attempts.push(seconds);
+            });
 
             if (err) {
                 return;
             }
 
-            if(!isDNF(results)){
-                let avg = 0;
-                console.log(avg);
-                results.forEach(attempt => { avg += attempt })
-                avg = avg - (Math.min(...results) + Math.max(...results));
+            let avg, best, avgStr, bestStr;
+            if (!isAvgDNF(attempts)) {
+                avg = 0;
+                attempts.forEach(attempt => { avg += attempt })
+                avg = avg - (Math.min(...attempts) + Math.max(...attempts));
                 avg /= 3;
                 avg = Math.round(avg * 100) / 100 //rounds to 2 decimal digits
-                time = convertSecondsToString(avg);
-                await interaction.reply(`${interaction.user} did **${time}** ao5 *(best ${Math.min(...results)})* with ${eventname}`);
-            }else{
-                await interaction.reply(`${interaction.user} did **DNF** ao5 with ${eventname}`);
+                avgStr = convertNumberToStringTime(avg);
+                best = Math.min(...(attempts.filter(x => x !== -1)));
+                bestStr = convertNumberToStringTime(best);
+            } else {
+                avg, avgStr = "DNF";
+                if (attempts.filter(x => (x !== "DNF" || x !== "DNS")).length === 0) {
+                    best = "DNF", bestStr = "DNF";
+                } else {
+                    best = Math.min(...attempts.filter(x => (x !== "DNF" || x !== "DNS")));
+                    bestStr = convertNumberToStringTime(best);
+                }
             }
+
+            const data = {
+                avg: avg,
+                best: best
+            };
+
+            const addData = async () => await setDoc(docRef, data);
+            addData();
+
+            await interaction.reply(`${interaction.user} did **${avgStr}** ao5 *(best ${bestStr})* with ${eventname}`);
         }
     }
 };
