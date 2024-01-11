@@ -93,7 +93,7 @@ module.exports = (eventname) => {
 
             const addData = async () => await setDoc(docRef, data);
             addData();
-            await interaction.reply(`${interaction.user} did **${bestStr}** bo3 *(mean ${avgStr})* with ${eventname}`);
+            await interaction.reply(`${interaction.user} got **${bestStr}** bo3 *(mean ${avgStr})* with ${eventname}`);
         }
     }
 };

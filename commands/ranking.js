@@ -30,19 +30,15 @@ module.exports = {
                     const eventPromises = querySnapshot.docs.map(async (doc) => {
                         r++;
                         const data = doc.data();
-                        console.log(data);
                         if(event == "3bld" || event == "4bld" || event == "5bld"){
                             datas += `${r}. <@${doc.id}> with a best of ${data.best} (mean of ${data.avg})\n`;
                         }else{
                             datas += `${r}. <@${doc.id}> with an average of ${data.avg} (best of ${data.best})\n`;
                         }
-                        
-                        console.log(event);
                     });
 
                     // Wait for all async operations for the current event to complete
                     await Promise.all(eventPromises);
-                    console.log(`${event}: ${datas !== ""}`)
                     if(datas !== ""){
                         table += `## ${event}\n${datas}\n`;
                         datas = "";
@@ -53,11 +49,8 @@ module.exports = {
                 }
             };
 
-            // Wait for all asynchronous operations for all events to complete
-
             // Now all asynchronous operations have completed
-            console.log(table);
-            interaction.reply(table);
+            await interaction.reply(table);
         }
 
         // Call the asynchronous function

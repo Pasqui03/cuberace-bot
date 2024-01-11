@@ -79,8 +79,7 @@ module.exports = (eventname) => {
 
             
             let avg, best, avgStr, bestStr;
-            attempts = attempts.filter(x => (x !== "DNF" || x !== "DNS"));
-
+            attempts = attempts.filter(x => (x !== "DNF" && x !== "DNS"));
             if (attempts.length === 0) { //all DNF                
                 avg = "DNF", best = "DNF", avgStr = "DNF", bestStr = "DNF";
             } else {
@@ -104,7 +103,7 @@ module.exports = (eventname) => {
 
             const addData = async () => await setDoc(docRef, data);
             addData();
-            await interaction.reply(`${interaction.user} did **${avgStr}** mo3 *(best ${bestStr})* with ${eventname}`);
+            await interaction.reply(`${interaction.user} got **${avgStr}** mo3 *(best solve ${bestStr})* with ${eventname}`);
         }
     }
 };

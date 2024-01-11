@@ -86,19 +86,20 @@ module.exports = (eventname) => {
             let avg, best, avgStr, bestStr;
             if (!isAvgDNF(attempts)) {
                 avg = 0;
-                attempts.forEach(attempt => { avg += attempt })
+                attempts = attempts.filter(x => (x !== "DNF" && x !== "DNS"))
+                attempts.forEach(attempt => { avg += attempt });
                 avg = avg - (Math.min(...attempts) + Math.max(...attempts));
                 avg /= 3;
                 avg = Math.round(avg * 100) / 100 //rounds to 2 decimal digits
                 avgStr = convertNumberToStringTime(avg);
-                best = Math.min(...(attempts.filter(x => x !== -1)));
+                best = Math.min(...attempts);
                 bestStr = convertNumberToStringTime(best);
             } else {
-                avg, avgStr = "DNF";
-                if (attempts.filter(x => (x !== "DNF" || x !== "DNS")).length === 0) {
+                avg = "DNF", avgStr = "DNF";
+                if (attempts.filter(x => (x !== "DNF" && x !== "DNS")).length === 0) {
                     best = "DNF", bestStr = "DNF";
                 } else {
-                    best = Math.min(...attempts.filter(x => (x !== "DNF" || x !== "DNS")));
+                    best = Math.min(...attempts.filter(x => (x !== "DNF"  && x !== "DNS")));
                     bestStr = convertNumberToStringTime(best);
                 }
             }
@@ -111,7 +112,7 @@ module.exports = (eventname) => {
             const addData = async () => await setDoc(docRef, data);
             addData();
 
-            await interaction.reply(`${interaction.user} did **${avgStr}** ao5 *(best ${bestStr})* with ${eventname}`);
+            await interaction.reply(`${interaction.user} got **${avgStr}** ao5 *(best ${bestStr})* with ${eventname}`);
         }
     }
 };

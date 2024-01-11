@@ -20,8 +20,10 @@ module.exports = {
 		let event = interaction.options.getString("event").trim();
 		let number = interaction.options.getInteger("number");
 		if (number <= 0) {
-			await interaction.reply({ content: "How do I generate a number negative of scrambles...", ephemeral: true });
+			await interaction.reply({ content: "how can I generate 0 or a negative number of scrambles...", ephemeral: true });
 			return;
+		}else if(number > 15){
+			await interaction.reply({ content: "Isn't too much the number of scrambles you've selected? Bruh", ephemeral: true })
 		}
 		try{
 			let str = `### ${event}\n`;
@@ -30,7 +32,7 @@ module.exports = {
 			}
 			await interaction.reply(str);
 		}catch{
-			await interaction.reply({ content: "Something went wrong, you may misspelled the event name. Write `/help` for more infos.", ephemeral: true })
+			await interaction.reply({ content: "Something went wrong, you may have misspelled the event name. Write `/help` for more infos.", ephemeral: true })
 		}
 	},
 };
