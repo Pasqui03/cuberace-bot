@@ -38,12 +38,15 @@ module.exports = (eventname) => {
             const docRef = doc(db, "servers", interaction.guild.id, eventname, interaction.user.id);
             const docSnap = await getDoc(docRef);
 
+            console.log(`INSERTING RESULT AO5 (server ${interaction.guild}[${interaction.guild.id}] BY ${interaction.user})`);
+
             if (docSnap.exists()) {
                 await interaction.reply({
                     content:
                         "You've already participated in this event.",
                     ephemeral: true
                 });
+                console.warn(`INSERTING ABORTED (server ${interaction.guild}[${interaction.guild.id}] BY ${interaction.user})`);
                 return;
             }
 
@@ -111,6 +114,9 @@ module.exports = (eventname) => {
 
             const addData = async () => await setDoc(docRef, data);
             addData();
+
+            console.warn(`INSERTED SUCCESSFULLY (server ${interaction.guild}[${interaction.guild.id}] BY ${interaction.user})`);
+
 
             await interaction.reply(`${interaction.user} got **${avgStr}** ao5 *(best ${bestStr})* with ${eventname}`);
         }

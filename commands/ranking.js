@@ -17,6 +17,7 @@ module.exports = {
             });
             return;
         }
+        console.log("READING RANKING ( server", interaction.guild.id, ")");
         const events = ["333", "222", "444", "555", "666", "777", "clock", "mega", "pyra", "skewb", "sq1", "3bld", "4bld", "5bld"];
         let r = 0;
         let table = "# Ranking\n";
@@ -32,6 +33,7 @@ module.exports = {
                 }
                 
                 try {
+                    
                     const querySnapshot = await getDocs(q);
                     
                     datas = "";
@@ -40,8 +42,10 @@ module.exports = {
                         const data = doc.data();
                         if(event == "3bld" || event == "4bld" || event == "5bld"){
                             datas += `${r}. <@${doc.id}> with a best of ${data.best} (mean of ${data.avg})\n`;
+                            console.log(`${r}. <@${doc.id}> with a best of ${data.best} (mean of ${data.avg})\n`)
                         }else{
                             datas += `${r}. <@${doc.id}> with an average of ${data.avg} (best of ${data.best})\n`;
+                            console.log(`${r}. <@${doc.id}> with an average of ${data.avg} (best of ${data.best})\n`);
                         }
                     });
 
@@ -58,6 +62,7 @@ module.exports = {
             };
 
             // Now all asynchronous operations have completed
+
             await interaction.reply(table);
         }
 

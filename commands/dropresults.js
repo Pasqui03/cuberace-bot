@@ -8,15 +8,6 @@ module.exports = {
         .setName('dropresults')
         .setDescription('drop all results to restart the race and give the role to the winners'),
     async execute(interaction) {
-        //deleteCollection(db, `servers/${interaction.guild.id}`);
-        //const member = guild
-        /*const guild = interaction.guild;
-        console.log(guild.roles.cache.find(r => r.name == "winner"));
-        const rol = guild.roles.cache.find(r => r.name == "winner");
-        rol.delete();*/
-
-
-
 
         if (interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
             const events = ["333", "222", "444", "555", "666", "777", "clock", "mega", "pyra", "skewb", "sq1", "3bld", "4bld", "5bld"];
@@ -25,9 +16,11 @@ module.exports = {
                 querySnapshot.forEach(async (document) => {
                     // doc.data() is never undefined for query doc snapshots
                     await deleteDoc(doc(db, "servers", interaction.guild.id, event, document.id));
+                    console.log(`DELETED: servers/${interaction.guild.id}/${event}/${document.id}`)
                     console.log(document.id, " => ", document.data());
                 });
             })
+            console.warn(`ALL DOCUMENT ARE DELETED SUCCESSFULLY (server ${interaction.guild.id})`);
             await interaction.reply("All results have been deleted. You can race again!");
         } else {
             await interaction.reply({

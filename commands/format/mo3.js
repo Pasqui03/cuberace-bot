@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
-
+const { db } = require("./../../firebase.js");
+const { doc, getDoc, setDoc } = require('firebase/firestore');
 const { convertStringTimeToNumber, convertNumberToStringTime } = require("../../utils/helper.js");
 
 module.exports = (eventname) => {
@@ -26,12 +27,16 @@ module.exports = (eventname) => {
             const docRef = doc(db, "servers", interaction.guild.id, eventname, interaction.user.id);
             const docSnap = await getDoc(docRef);
 
+            console.log(`INSERTING RESULT MO3 (server ${interaction.guild}[${interaction.guild.id}] BY ${interaction.user})`);
+    
             if (docSnap.exists()) {
+                console.warn(`INSERTING ABORTED (server ${interaction.guild}[${interaction.guild.id}] BY ${interaction.user})`);
                 await interaction.reply({
                     content:
                         "You've already participated in this event.",
                     ephemeral: true
                 });
+                
                 return;
             }
 
@@ -48,17 +53,7 @@ module.exports = (eventname) => {
             attemptsString.every(async attempt => {
                 let seconds = 0;
                 if (rgx.test(attempt)) {
-                    number = convertStringTimeToNumber(attempt);
-                    if (number > 0) {
-                        seconds = number;
-                    } else {
-                        err = true
-                        await interaction.reply({
-                            content:
-                                "All your attempts must be greater than 0.",
-                            ephemeral: true
-                        });
-                    }
+                    seconds = convertStringTimeToNumber(attempt);
                 } else if (attempt.toUpperCase() == "DNF" || attempt.toUpperCase() == "DNS") {
                     seconds = -1;
                 } else {
@@ -103,6 +98,8 @@ module.exports = (eventname) => {
 
             const addData = async () => await setDoc(docRef, data);
             addData();
+
+            console.warn(`INSERTED SUCCESSFULLY (server ${interaction.guild}[${interaction.guild.id}] BY ${interaction.user})`);
             await interaction.reply(`${interaction.user} got **${avgStr}** mo3 *(best solve ${bestStr})* with ${eventname}`);
         }
     }
