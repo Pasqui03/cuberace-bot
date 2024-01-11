@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 const { db } = require('./../firebase.js');
 
 const { collection, getDocs, query, orderBy } = require('firebase/firestore');

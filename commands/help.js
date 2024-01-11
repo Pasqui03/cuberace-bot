@@ -8,7 +8,7 @@ module.exports = {
         let text = `
 # Help
 *This bot is made for RottenCubing server*
-Version: \`1.0\`
+Version: \`1.1\`
 Author: \`Mattia Pasquini\`
 ## \`/<event>\` [...attempts]
 This is a command where you can insert your results. To check the results, run the command \`/ranking\`. You can insert your results once per event.
@@ -29,7 +29,7 @@ The \`<event>\` parameter is id event. There are following options:
 - mega
 
 ## \`/ranking\`
-Show the ranking based on the results entered for all events.
+**ONLY ADMIN** can run this command. Show the ranking based on the results entered for all events.
 
 ## \`/scramble <event> <number>\`
 Generate scramble.
