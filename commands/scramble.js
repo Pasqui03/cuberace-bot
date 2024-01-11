@@ -24,6 +24,7 @@ module.exports = {
 			return;
 		}else if(number > 15){
 			await interaction.reply({ content: "Isn't too much the number of scrambles you've selected? Bruh", ephemeral: true })
+			return;
 		}
 		try{
 			let str = `### ${event}\n`;
